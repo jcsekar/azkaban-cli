@@ -22,10 +22,10 @@ class AzkabanLoginTest(TestCase):
         Test if login method from Azkaban class is calling login request with valid parameters
         """
 
-        host       = 'https://testhost:testport/'
+        host = 'https://testhost:testport/'
         valid_host = 'https://testhost:testport'
-        user       = 'user'
-        password   = 'password'    # nosec
+        user = 'user'
+        password = 'password'  # nosec
 
         self.azk.login(host, user, password)
 

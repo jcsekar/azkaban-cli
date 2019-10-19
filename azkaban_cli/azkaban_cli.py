@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import
-from bs4 import BeautifulSoup
-import logging
-import click
+
 import json
-import requests
-import sys
+import logging
 import os
+import sys
+
+import click
+import requests
+from bs4 import BeautifulSoup
+
+from azkaban_cli.__version__ import __version__
 from azkaban_cli.azkaban import Azkaban
 from azkaban_cli.exceptions import (
     NotLoggedOnError,
@@ -31,7 +35,6 @@ from azkaban_cli.exceptions import (
     FetchFlowExecutionUpdatesError,
     FetchExecutionsOfAFlowError,
 )
-from azkaban_cli.__version__ import __version__
 
 APP_NAME = 'Azkaban CLI'
 
@@ -41,7 +44,8 @@ SESSION_JSON_PATH = os.path.join(AZKABAN_CLI_PATH, "user-session.json")
 
 
 def __call_for_login(ctx):
-    ctx.invoke(login, host=click.prompt('Host'), user=click.prompt('User'), password=click.prompt('Password', hide_input=True))
+    ctx.invoke(login, host=click.prompt('Host'), user=click.prompt('User'),
+               password=click.prompt('Password', hide_input=True))
 
 
 def __login_expired(ctx):
@@ -69,6 +73,7 @@ def login_required(function):
 
     return function_wrapper
 
+
 def __save_logged_session(logged_session):
     if not os.path.exists(AZKABAN_CLI_PATH):
         os.mkdir(AZKABAN_CLI_PATH)
@@ -76,15 +81,18 @@ def __save_logged_session(logged_session):
     with open(SESSION_JSON_PATH, "w") as session_file:
         json.dump(logged_session, session_file)
 
+
 def __load_logged_session():
     if os.path.exists(SESSION_JSON_PATH):
         with open(SESSION_JSON_PATH, "r") as session_file:
             logged_session = json.load(session_file)
             return logged_session
 
+
 def __delete_logged_session():
     if os.path.exists(SESSION_JSON_PATH):
         os.remove(SESSION_JSON_PATH)
+
 
 def __login(ctx, host, user, password):
     azkaban = ctx.obj[u'azkaban']
@@ -98,6 +106,7 @@ def __login(ctx, host, user, password):
     except LoginError as e:
         logging.error("Login error: %s", str(e))
 
+
 def __logout(ctx):
     azkaban = ctx.obj[u'azkaban']
 
@@ -105,6 +114,7 @@ def __logout(ctx):
     __delete_logged_session()
 
     logging.info("Logged out")
+
 
 @login_required
 def __upload(ctx, path, project, zip_name):
@@ -115,6 +125,7 @@ def __upload(ctx, path, project, zip_name):
     except UploadError as e:
         logging.error(str(e))
 
+
 @login_required
 def __schedule(ctx, project, flow, cron, concurrent_option):
     azkaban = ctx.obj[u'azkaban']
@@ -123,6 +134,7 @@ def __schedule(ctx, project, flow, cron, concurrent_option):
         azkaban.schedule(project, flow, cron, concurrentOption=concurrent_option)
     except ScheduleError as e:
         logging.error(str(e))
+
 
 @login_required
 def __unschedule(ctx, project, flow):
@@ -141,6 +153,7 @@ def __unschedule(ctx, project, flow):
     except UnscheduleError as e:
         logging.error(str(e))
 
+
 @login_required
 def __execute(ctx, project, flow):
     azkaban = ctx.obj[u'azkaban']
@@ -149,6 +162,7 @@ def __execute(ctx, project, flow):
         azkaban.execute(project, flow)
     except ExecuteError as e:
         logging.error(str(e))
+
 
 @login_required
 def __cancel(ctx, execution_id):
@@ -159,6 +173,7 @@ def __cancel(ctx, execution_id):
     except CancelError as e:
         logging.error(str(e))
 
+
 @login_required
 def __create(ctx, project, description):
     azkaban = ctx.obj[u'azkaban']
@@ -166,6 +181,7 @@ def __create(ctx, project, description):
         azkaban.create(project, description)
     except CreateError as e:
         logging.error(str(e))
+
 
 @login_required
 def __delete(ctx, project):
@@ -208,6 +224,7 @@ def __delete(ctx, project):
     else:
         logging.info('Project %s was successfully deleted' % (project))
 
+
 def __parse_projects(text, user):
     def get_text(div):
         return div.find_all('a')[0].text
@@ -226,6 +243,7 @@ def __parse_projects(text, user):
     except:
         raise FetchProjectsError('Error parsing response')
 
+
 @login_required
 def __fetch_projects(ctx, user):
     azkaban = ctx.obj[u'azkaban']
@@ -238,6 +256,7 @@ def __fetch_projects(ctx, user):
         __parse_projects(text, user)
     except FetchProjectsError as e:
         logging.error(str(e))
+
 
 def __log_sla(json):
     for settings in json.get('settings', []):
@@ -266,6 +285,7 @@ def __fetch_sla(ctx, schedule):
     except FetchSLAError as e:
         logging.error(str(e))
 
+
 @login_required
 def __add_permission(ctx, project, group, admin, read, write, _execute, _schedule):
     azkaban = ctx.obj[u'azkaban']
@@ -273,7 +293,7 @@ def __add_permission(ctx, project, group, admin, read, write, _execute, _schedul
         azkaban.add_permission(
             project,
             group,
-            permission_options= {
+            permission_options={
                 'admin': admin,
                 'read': read,
                 'write': write,
@@ -283,6 +303,7 @@ def __add_permission(ctx, project, group, admin, read, write, _execute, _schedul
         )
     except AddPermissionError as e:
         logging.error(str(e))
+
 
 @login_required
 def __remove_permission(ctx, project, group):
@@ -295,6 +316,7 @@ def __remove_permission(ctx, project, group):
     except RemovePermissionError as e:
         logging.error(str(e))
 
+
 @login_required
 def __change_permission(ctx, project, group, admin, read, write, _execute, _schedule):
     azkaban = ctx.obj[u'azkaban']
@@ -302,7 +324,7 @@ def __change_permission(ctx, project, group, admin, read, write, _execute, _sche
         azkaban.change_permission(
             project,
             group,
-            permission_options= {
+            permission_options={
                 'admin': admin,
                 'read': read,
                 'write': write,
@@ -312,6 +334,7 @@ def __change_permission(ctx, project, group, admin, read, write, _execute, _sche
         )
     except ChangePermissionError as e:
         logging.error(str(e))
+
 
 def __log_jobs(json):
     logging.info("Project: %s" % (json.get('project')))
@@ -328,6 +351,7 @@ def __log_jobs(json):
             for i in _in:
                 logging.info('\t- %s' % (i))
 
+
 @login_required
 def __fetch_jobs_from_flow(ctx, project, flow):
     azkaban = ctx.obj[u'azkaban']
@@ -337,6 +361,7 @@ def __fetch_jobs_from_flow(ctx, project, flow):
         __parse_jobs(json)
     except FetchJobsFromFlowError as e:
         logging.error(str(e))
+
 
 def __log_flow_execution(json):
     logging.info('Execution Id: %s' % (json.get('execid')))
@@ -382,6 +407,7 @@ def __fetch_flow_execution(ctx, execution_id):
     except FetchFlowExecutionError as e:
         logging.error(str(e))
 
+
 def __log_flow_execution_updates(json):
     logging.info('Id: %s' % (json.get('id')))
     logging.info('Start time: %s' % (json.get('startTime')))
@@ -400,6 +426,7 @@ def __log_flow_execution_updates(json):
     logging.info('Flow: %s' % (json.get('flow')))
     logging.info('Flow end time: %s' % (json.get('endTime')))
 
+
 @login_required
 def __fetch_flow_execution_updates(ctx, execution_id, last_update_time):
     azkaban = ctx.obj[u'azkaban']
@@ -409,6 +436,7 @@ def __fetch_flow_execution_updates(ctx, execution_id, last_update_time):
         __log_flow_execution_updates(json)
     except FetchFlowExecutionUpdatesError as e:
         logging.error(str(e))
+
 
 def __log_executions_of_a_flow(json):
     logging.info('Total: %s' % (json.get('total')))
@@ -427,6 +455,7 @@ def __log_executions_of_a_flow(json):
         logging.info('Project Id: %s' % (json.get('projectId')))
         logging.info('End time: %s' % (json.get('endTime')))
         logging.info('Flow Id: %s' % (json.get('flowId')))
+
 
 @login_required
 def __fetch_executions_of_a_flow(ctx, project, flow, start, length):
@@ -461,6 +490,7 @@ def cli():
 
     ctx.obj['azkaban'] = azkaban
 
+
 @click.command(u'login')
 @click.pass_context
 @click.option(u'--host', prompt=True, help=u'Azkaban hostname with protocol.')
@@ -470,30 +500,37 @@ def login(ctx, host, user, password):
     """Login to an Azkaban server"""
     __login(ctx, host, user, password)
 
+
 @click.command(u'logout')
 @click.pass_context
 def logout(ctx):
     """Logout from Azkaban session"""
     __logout(ctx)
 
+
 @click.command(u'upload')
 @click.pass_context
 @click.argument(u'path', type=click.STRING)
-@click.option(u'--project', type=click.STRING, help=u'Project name in Azkaban, default value is the dirname specified in path argument.')
-@click.option(u'--zip-name', type=click.STRING, help=u'If you wanna specify Zip file name that will be generated and uploaded to Azkaban. Default value is project name.')
+@click.option(u'--project', type=click.STRING,
+              help=u'Project name in Azkaban, default value is the dirname specified in path argument.')
+@click.option(u'--zip-name', type=click.STRING,
+              help=u'If you wanna specify Zip file name that will be generated and uploaded to Azkaban. Default value is project name.')
 def upload(ctx, path, project, zip_name):
     """Generates a zip of path passed as argument and uploads it to Azkaban."""
     __upload(ctx, path, project, zip_name)
+
 
 @click.command(u'schedule')
 @click.pass_context
 @click.argument(u'project', type=click.STRING)
 @click.argument(u'flow', type=click.STRING)
 @click.argument(u'cron', type=click.STRING)
-@click.option(u'--concurrent-option', type=click.STRING, help=u'If you wanna specify concurrent option for scheduling flow. Possible values: ignore, pipeline, skip')
+@click.option(u'--concurrent-option', type=click.STRING,
+              help=u'If you wanna specify concurrent option for scheduling flow. Possible values: ignore, pipeline, skip')
 def schedule(ctx, project, flow, cron, concurrent_option):
     """Schedule a flow from a project with specified cron in quartz format"""
     __schedule(ctx, project, flow, cron, concurrent_option)
+
 
 @click.command(u'unschedule')
 @click.pass_context
@@ -503,6 +540,7 @@ def unschedule(ctx, project, flow):
     """Unschedule a flow from a project"""
     __unschedule(ctx, project, flow)
 
+
 @click.command(u'execute')
 @click.pass_context
 @click.argument(u'project', type=click.STRING)
@@ -511,12 +549,14 @@ def execute(ctx, project, flow):
     """Execute a flow from a project"""
     __execute(ctx, project, flow)
 
+
 @click.command(u'cancel')
 @click.pass_context
 @click.argument(u'execution_id', type=click.STRING)
 def cancel(ctx, execution_id):
     """Cancel a flow execution"""
     __cancel(ctx, execution_id)
+
 
 @click.command(u'create')
 @click.pass_context
@@ -526,12 +566,14 @@ def create(ctx, project, description):
     """Create a new project"""
     __create(ctx, project, description)
 
+
 @click.command(u'delete')
 @click.pass_context
 @click.argument(u'project', type=click.STRING)
 def delete(ctx, project):
     """Delete a project"""
     __delete(ctx, project)
+
 
 @click.command(u'fetch_projects')
 @click.pass_context
@@ -540,6 +582,7 @@ def fetch_projects(ctx, user):
     """Fetch all project from a user"""
     __fetch_projects(ctx, user)
 
+
 @click.command(u'fetch_sla')
 @click.pass_context
 @click.argument(u'schedule', type=click.STRING)
@@ -547,18 +590,22 @@ def fetch_sla(ctx, schedule):
     """Fetch the SLA from a schedule"""
     __fetch_sla(ctx, schedule)
 
+
 @click.command(u'add_permission')
 @click.pass_context
 @click.argument(u'project', type=click.STRING)
 @click.argument(u'group', type=click.STRING)
-@click.option('--admin', '-a', '_admin', required=False, help=u'The group has admin rights in the project', is_flag=True)
+@click.option('--admin', '-a', '_admin', required=False, help=u'The group has admin rights in the project',
+              is_flag=True)
 @click.option('--read', '-r', '_read', required=False, help=u'The group can read the project', is_flag=True)
 @click.option('--write', '-w', '_write', required=False, help=u'The group can write on the project', is_flag=True)
 @click.option('--execute', '-e', '_execute', required=False, help=u'The group can execute on the project', is_flag=True)
-@click.option('--schedule', '-s', '_schedule', required=False, help=u'The group can schedule on the project', is_flag=True)
+@click.option('--schedule', '-s', '_schedule', required=False, help=u'The group can schedule on the project',
+              is_flag=True)
 def add_permission(ctx, project, group, _admin, _read, _write, _execute, _schedule):
     """Add a group with permission in a project"""
     __add_permission(ctx, project, group, _admin, _read, _write, _execute, _schedule)
+
 
 @click.command(u'remove_permission')
 @click.pass_context
@@ -568,18 +615,22 @@ def remove_permission(ctx, project, group):
     """Remove group permission from a project"""
     __remove_permission(ctx, project, group)
 
+
 @click.command(u'change_permission')
 @click.pass_context
 @click.argument(u'project', type=click.STRING)
 @click.argument(u'group', type=click.STRING)
-@click.option('--admin', '-a', '_admin', required=False, help=u'The group has admin rights in the project', is_flag=True)
+@click.option('--admin', '-a', '_admin', required=False, help=u'The group has admin rights in the project',
+              is_flag=True)
 @click.option('--read', '-r', '_read', required=False, help=u'The group can read the project', is_flag=True)
 @click.option('--write', '-w', '_write', required=False, help=u'The group can write on the project', is_flag=True)
 @click.option('--execute', '-e', '_execute', required=False, help=u'The group can execute on the project', is_flag=True)
-@click.option('--schedule', '-s', '_schedule', required=False, help=u'The group can schedule on the project', is_flag=True)
+@click.option('--schedule', '-s', '_schedule', required=False, help=u'The group can schedule on the project',
+              is_flag=True)
 def change_permission(ctx, project, group, _admin, _read, _write, _execute, _schedule):
     """Change a group permission in a project"""
     __change_permission(ctx, project, group, _admin, _read, _write, _execute, _schedule)
+
 
 @click.command(u'fetch_jobs_from_flow')
 @click.pass_context
@@ -589,12 +640,14 @@ def fetch_jobs_from_flow(ctx, project, flow):
     """Fetch jobs of a flow"""
     __fetch_jobs_from_flow(ctx, project, flow)
 
+
 @click.command(u'fetch_flow_execution')
 @click.pass_context
 @click.argument(u'execution_id', type=click.STRING)
 def fetch_flow_execution(ctx, execution_id):
     """Fetch a flow execution"""
     __fetch_flow_execution(ctx, execution_id)
+
 
 @click.command(u'fetch_executions_of_a_flow')
 @click.pass_context
@@ -606,13 +659,16 @@ def fetch_executions_of_a_flow(ctx, project, flow, start, length):
     """Fetch executions of a flow"""
     __fetch_executions_of_a_flow(ctx, project, flow, start, length)
 
+
 @click.command(u'fetch_flow_execution_updates')
 @click.pass_context
 @click.argument(u'execution_id', type=click.STRING)
-@click.option('-lt', 'last_update_time', type=click.STRING, default=u"-1", help=u'The criteria to filter by last update time', show_default=True)
+@click.option('-lt', 'last_update_time', type=click.STRING, default=u"-1",
+              help=u'The criteria to filter by last update time', show_default=True)
 def fetch_flow_execution_updates(ctx, execution_id, last_update_time):
     """Fetch flow execution updates"""
     __fetch_flow_execution_updates(ctx, execution_id, last_update_time)
+
 
 cli.add_command(login)
 cli.add_command(logout)

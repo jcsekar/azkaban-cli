@@ -9,6 +9,7 @@ This module provides a set of requests for the Azkaban API
 import logging
 import os
 
+
 def upload_request(session, host, session_id, project, zip_path):
     """Upload request for the Azkaban API
 
@@ -42,6 +43,7 @@ def upload_request(session, host, session_id, project, zip_path):
 
     return response
 
+
 def login_request(session, host, user, password):
     """Login request for the Azkaban API
 
@@ -67,6 +69,7 @@ def login_request(session, host, user, password):
     logging.debug("Response: \n%s", response.text)
 
     return response
+
 
 def schedule_request(session, host, session_id, project, flow, cron, **execution_options):
     r"""Schedule request for the Azkaban API
@@ -104,6 +107,7 @@ def schedule_request(session, host, session_id, project, flow, cron, **execution
 
     return response
 
+
 def fetch_flows_request(session, host, session_id, project):
     """Fetch flows of a project request for the Azkaban API
 
@@ -130,6 +134,7 @@ def fetch_flows_request(session, host, session_id, project):
 
     return response
 
+
 def fetch_executions_of_a_flow_request(session, session_id, project, flow, start, length):
     """fetch executions of a flow on a given project
 
@@ -149,7 +154,7 @@ def fetch_executions_of_a_flow_request(session, session_id, project, flow, start
         host + '/manager',
         params={
             u'session.id': session_id,
-            u'ajax':'fetchFlowExecutions',
+            u'ajax': 'fetchFlowExecutions',
             u'project': project,
             u'flow': flow,
             u'start': start,
@@ -160,6 +165,7 @@ def fetch_executions_of_a_flow_request(session, session_id, project, flow, start
     logging.debug("Response: \n%s", response.text)
 
     return response
+
 
 def fetch_jobs_from_flow_request(session, host, session_id, project, flow):
     """Fetch jobs of a flow of a project request for the Azkaban API
@@ -189,6 +195,7 @@ def fetch_jobs_from_flow_request(session, host, session_id, project, flow):
 
     return response
 
+
 def fetch_schedule_request(session, host, session_id, project_id, flow):
     """Fetch flow of a project request for the Azkaban API
 
@@ -216,6 +223,7 @@ def fetch_schedule_request(session, host, session_id, project_id, flow):
     logging.debug("Response: \n%s", response.text)
 
     return response
+
 
 def unschedule_request(session, host, session_id, schedule_id):
     """Unschedule request for the Azkaban API
@@ -247,7 +255,8 @@ def unschedule_request(session, host, session_id, schedule_id):
 
     return response
 
-#TODO: Add optional parameters
+
+# TODO: Add optional parameters
 def execute_request(session, host, session_id, project, flow):
     """Execute request for the Azkaban API
 
@@ -275,6 +284,7 @@ def execute_request(session, host, session_id, project, flow):
     logging.debug("Response: \n%s", response.text)
 
     return response
+
 
 def cancel_request(session, host, session_id, exec_id):
     """Cancel an running flow for the Azkaban API
@@ -330,6 +340,7 @@ def create_request(session, host, session_id, project, description):
 
     return response
 
+
 def delete_request(session, host, session_id, project):
     """Delete a Project request for the Azkaban API
 
@@ -354,6 +365,7 @@ def delete_request(session, host, session_id, project):
 
     return response
 
+
 def fetch_projects_request(session, host, session_id):
     """Fetch all projects request for the Azkaban API
 
@@ -377,6 +389,7 @@ def fetch_projects_request(session, host, session_id):
 
     return response
 
+
 def add_permission_request(session, host, session_id, project, group, permission_options):
     """Add permission request for the Azkaban API
 
@@ -398,6 +411,7 @@ def add_permission_request(session, host, session_id, project, group, permission
 
     return response
 
+
 def remove_permission_request(session, host, session_id, project, group):
     """Remove permission request for the Azkaban API
 
@@ -412,7 +426,7 @@ def remove_permission_request(session, host, session_id, project, group):
     :raises requests.exceptions.ConnectionError: if cannot connect to host
     """
 
-    #to remove a group permission, we have to pass all permissions as False
+    # to remove a group permission, we have to pass all permissions as False
     permission_options = {'admin': False, 'read': False, 'write': False, 'execute': False, 'schedule': False}
 
     response = __call_permission_api(session, host, session_id, 'changePermission', project, group, permission_options)
@@ -420,6 +434,7 @@ def remove_permission_request(session, host, session_id, project, group):
     logging.debug("Response: \n%s", response.text)
 
     return response
+
 
 def change_permission_request(session, host, session_id, project, group, permission_options):
     """Change permission request for the Azkaban API
@@ -469,7 +484,8 @@ def fetch_sla_request(session, host, session_id, schedule_id):
 
     return response
 
-def __call_permission_api(session, host, session_id, operation, project, group, permission_options ):
+
+def __call_permission_api(session, host, session_id, operation, project, group, permission_options):
     """
     This function is a utility to call permission API in Azkaban.
 
@@ -491,7 +507,7 @@ def __call_permission_api(session, host, session_id, operation, project, group, 
 
     return session.get(
         host + '/manager',
-        params = {
+        params={
             u'session.id': session_id,
             u'ajax': operation,
             u'project': project,
@@ -504,6 +520,7 @@ def __call_permission_api(session, host, session_id, operation, project, group, 
             u'group': True
         }
     )
+
 
 def fetch_flow_execution_request(session, host, session_id, exec_id):
     """Fetch a flow execution request for the Azkaban API
@@ -530,6 +547,7 @@ def fetch_flow_execution_request(session, host, session_id, exec_id):
     logging.debug("Response: \n%s", response.text)
 
     return response
+
 
 def fetch_flow_execution_updates_request(session, host, session_id, exec_id, last_update_time):
     """Fetch a flow execution updates request for the Azkaban API

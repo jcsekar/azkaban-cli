@@ -1,6 +1,16 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import
+
+import logging
+import os
+from shutil import make_archive
+
+import requests
+import urllib3
+from urllib3.exceptions import InsecureRequestWarning
+
+import azkaban_cli.api as api
 from azkaban_cli.exceptions import (
     NotLoggedOnError,
     SessionError,
@@ -22,14 +32,7 @@ from azkaban_cli.exceptions import (
     FetchFlowExecutionUpdatesError,
     FetchExecutionsOfAFlowError
 )
-from shutil import make_archive
-from urllib3.exceptions import InsecureRequestWarning
-import azkaban_cli.api as api
-import json
-import logging
-import os
-import requests
-import urllib3
+
 
 class Azkaban(object):
     def __init__(self):
@@ -87,8 +90,8 @@ class Azkaban(object):
     def __catch_response_error(self, response, exception, ignore_empty_responses=False):
         self.__catch_login(response)
 
-        #some ajax api operations don`t have return body making response.json() raise a ValueError exception
-        #The try block enable the __catch_empty_response raise the correct exception
+        # some ajax api operations don`t have return body making response.json() raise a ValueError exception
+        # The try block enable the __catch_empty_response raise the correct exception
         try:
             response_json = response.json()
         except Exception:
@@ -97,10 +100,9 @@ class Azkaban(object):
         self.__catch_response_error_msg(exception, response_json)
         self.__catch_response_status_error(exception, response_json)
 
-        #don't raise a exception with we know the request has a empty body
+        # don't raise a exception with we know the request has a empty body
         if not ignore_empty_responses:
             self.__catch_empty_response(exception, response_json)
-
 
     def get_logged_session(self):
         """Method for return the host and session id of the logged session saved on the class
@@ -196,7 +198,7 @@ class Azkaban(object):
             raise UploadError(str(e))
 
         try:
-            response = api.upload_request(self.__session ,self.__host, self.__session_id, project, zip_path)
+            response = api.upload_request(self.__session, self.__host, self.__session_id, project, zip_path)
         finally:
             os.remove(zip_path)
 
@@ -225,7 +227,7 @@ class Azkaban(object):
 
         self.__check_if_logged()
 
-        execution_options = {k:v for (k, v) in execution_options.items() if v}
+        execution_options = {k: v for (k, v) in execution_options.items() if v}
 
         response = api.schedule_request(
             self.__session,
@@ -407,7 +409,7 @@ class Azkaban(object):
 
         self.__check_if_logged()
 
-        response  = api.cancel_request(
+        response = api.cancel_request(
             self.__session,
             self.__host,
             self.__session_id,
@@ -415,7 +417,6 @@ class Azkaban(object):
         )
 
         self.__catch_response_error(response, CancelError)
-
 
     def create(self, project, description):
         """Create command, intended to make the request to Azkaban and treat the response properly.
@@ -483,7 +484,6 @@ class Azkaban(object):
 
         return response.text
 
-
     def add_permission(self, project, group, permission_options):
         """Add permission command, intended to make the request to Azkaban and treat the response properly.
 
@@ -515,7 +515,8 @@ class Azkaban(object):
 
         self.__catch_response_error(response, AddPermissionError, True)
 
-        logging.info('Group [%s] add with permission [%s] in the Project [%s] successfully' % (group,  permission_options, project))
+        logging.info('Group [%s] add with permission [%s] in the Project [%s] successfully' % (
+            group, permission_options, project))
 
     def remove_permission(self, project, group):
         """Remove permission command, intended to make the request to Azkaban and treat the response properly.
@@ -544,7 +545,6 @@ class Azkaban(object):
         self.__catch_response_error(response, RemovePermissionError, True)
 
         logging.info('Group [%s] permission removed from the Project [%s] successfully' % (group, project))
-
 
     def change_permission(self, project, group, permission_options):
         """Change permission command, intended to make the request to Azkaban and treat the response properly.
@@ -577,7 +577,8 @@ class Azkaban(object):
 
         self.__catch_response_error(response, ChangePermissionError, True)
 
-        logging.info('Group [%s] AAA received new permissions [%s] in the Project [%s] successfully' % (group, permission_options, project))
+        logging.info('Group [%s] AAA received new permissions [%s] in the Project [%s] successfully' % (
+            group, permission_options, project))
 
     def fetch_sla(self, schedule_id):
         """Fetch SLA command, intended to make the request to Azkaban and treat the response properly.
@@ -599,7 +600,6 @@ class Azkaban(object):
         response_json = response.json()
         return response_json
 
-
     def __check_group_permissions(self, permission_options):
         __options = ["admin", "write", "read", "execute", "schedule"]
         filled_permission_options = {
@@ -613,11 +613,11 @@ class Azkaban(object):
             filled_permission_options['execute'] and \
             filled_permission_options['schedule']
 
-        #if we have the admin opt, then all be true
+        # if we have the admin opt, then all be true
         if filled_permission_options['admin']:
             filled_permission_options = {option: True for option in filled_permission_options}
 
-        #if we don`t have declared options, then we have to set the read option as default, like in the Azkaban web-ui
+        # if we don`t have declared options, then we have to set the read option as default, like in the Azkaban web-ui
         elif not have_declared_options:
             filled_permission_options['read'] = True
 

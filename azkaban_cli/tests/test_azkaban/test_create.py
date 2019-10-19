@@ -121,7 +121,7 @@ class AzkabanCreateTest(TestCase):
         responses.add(
             responses.POST,
             self.host + "/manager",
-            json={'message': "Project name cannot be empty.", 'status':"error"},
+            json={'message': "Project name cannot be empty.", 'status': "error"},
             status=200
         )
 
@@ -137,7 +137,7 @@ class AzkabanCreateTest(TestCase):
         responses.add(
             responses.POST,
             self.host + "/manager",
-            json={'message': "Description cannot be empty.", 'status':"error"},
+            json={'message': "Description cannot be empty.", 'status': "error"},
             status=200
         )
 

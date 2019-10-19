@@ -6,6 +6,7 @@ import responses
 import azkaban_cli.azkaban
 from azkaban_cli.exceptions import RemovePermissionError, SessionError
 
+
 class AzkabanRemovePermissionTest(TestCase):
     def setUp(self):
         """
@@ -21,7 +22,7 @@ class AzkabanRemovePermissionTest(TestCase):
         self.azk.set_logged_session(self.host, self.user, self.session_id)
 
         self.project = 'ProjectTest'
-        self.group   = 'GroupTest'
+        self.group = 'GroupTest'
 
     @responses.activate
     def test_remove_permission(self):
@@ -47,7 +48,6 @@ class AzkabanRemovePermissionTest(TestCase):
 
         mock_remove_permission_request.assert_called_with(ANY, self.host, self.session_id, self.project, self.group)
 
-
     @responses.activate
     def test_invalid_group_remove_permission(self):
         """
@@ -58,9 +58,9 @@ class AzkabanRemovePermissionTest(TestCase):
             responses.GET,
             self.host + "/manager",
             json={
-              'project' : 'teste-permission-api-20190806',
-              'error' : 'Group is invalid.',
-              'projectId' : 107
+                'project': 'teste-permission-api-20190806',
+                'error': 'Group is invalid.',
+                'projectId': 107
             },
             status=200
         )
@@ -78,9 +78,9 @@ class AzkabanRemovePermissionTest(TestCase):
             responses.GET,
             self.host + "/manager",
             json={
-              "project" : "teste-permission-api-20190806",
-              "error" : "Group permission don't exists.",
-              "projectId" : 107
+                "project": "teste-permission-api-20190806",
+                "error": "Group permission don't exists.",
+                "projectId": 107
             },
             status=200
         )

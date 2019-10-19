@@ -33,14 +33,14 @@ class AzkabanFetchSLATest(TestCase):
             responses.GET,
             self.host + "/schedule",
             json={
-                "settings":[{
-                    "duration" : "300m",
-                    "rule" : "SUCCESS",
-                    "id" : "aaa",
-                    "actions" : [ "EMAIL" ]
+                "settings": [{
+                    "duration": "300m",
+                    "rule": "SUCCESS",
+                    "id": "aaa",
+                    "actions": ["EMAIL"]
                 }],
                 "slaEmails": ["a@example.com"],
-                "allJobNames" : [ "aaa"]
+                "allJobNames": ["aaa"]
             },
             status=200
         )

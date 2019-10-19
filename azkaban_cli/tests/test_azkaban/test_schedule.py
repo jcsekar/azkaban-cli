@@ -23,8 +23,8 @@ class AzkabanScheduleTest(TestCase):
         self.azk.set_logged_session(self.host, self.user, self.session_id)
 
         self.project = 'ProjectTest'
-        self.flow    = 'FlowTest'
-        self.cron    = '0 0 23 ? * *'
+        self.flow = 'FlowTest'
+        self.cron = '0 0 23 ? * *'
 
     @responses.activate
     @patch('azkaban_cli.azkaban.api.schedule_request')

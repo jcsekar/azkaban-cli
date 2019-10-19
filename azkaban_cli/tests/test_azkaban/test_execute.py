@@ -22,7 +22,7 @@ class AzkabanExecuteTest(TestCase):
         self.azk.set_logged_session(self.host, self.user, self.session_id)
 
         self.project = 'ProjectTest'
-        self.flow    = 'FlowTest'
+        self.flow = 'FlowTest'
 
     @responses.activate
     def test_execute(self):
@@ -53,7 +53,6 @@ class AzkabanExecuteTest(TestCase):
         self.azk.execute(self.project, self.flow)
 
         mock_execute_request.assert_called_with(ANY, self.host, self.session_id, self.project, self.flow)
-
 
     @responses.activate
     def test_flow_cannot_be_found_execute(self):

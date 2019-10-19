@@ -103,7 +103,7 @@ class AzkabanUploadTest(TestCase):
         mock_make_archive.side_effect = FileNotFoundError
 
         with self.assertRaises(UploadError):
-           self.azk.upload('path', 'project', 'zip_name')
+            self.azk.upload('path', 'project', 'zip_name')
 
         self.assertEqual(len(responses.calls), 0)
 
@@ -115,8 +115,8 @@ class AzkabanUploadTest(TestCase):
         Test if upload method from Azkaban class is calling upload request with expected arguments
         """
 
-        path     = '/path/to/project'
-        project  = 'project'
+        path = '/path/to/project'
+        project = 'project'
         zip_name = 'zip_name'
         zip_path = '/path/to/zip_name.zip'
 
@@ -136,7 +136,7 @@ class AzkabanUploadTest(TestCase):
         Expected to get project name from path
         """
 
-        path             = '/path/to/project'
+        path = '/path/to/project'
         get_project_name = 'project'
 
         mock_make_archive.return_value = 'zip_path'
@@ -155,8 +155,8 @@ class AzkabanUploadTest(TestCase):
         Expected to get zip name from project
         """
 
-        path     = '/path/to/project'
-        project  = 'project'
+        path = '/path/to/project'
+        project = 'project'
 
         self.azk.upload(path, project=project)
 
@@ -172,8 +172,8 @@ class AzkabanUploadTest(TestCase):
         Test if upload method from Azkaban class is removing the zip that created for upload
         """
 
-        path     = '/path/to/project'
-        project  = 'project'
+        path = '/path/to/project'
+        project = 'project'
         zip_path = 'zip_path'
         responses.add(responses.POST, self.host + "/manager", json={'projectId': '33', 'version': '58'})
 
@@ -192,9 +192,10 @@ class AzkabanUploadTest(TestCase):
         Test if upload method from Azkaban class raises Session if request returns error caused by expired session
         """
 
-        responses.add(responses.POST, self.host + "/manager", body="Login error. Need username and password", status=200)
+        responses.add(responses.POST, self.host + "/manager", body="Login error. Need username and password",
+                      status=200)
 
-        path     = '/path/to/project'
+        path = '/path/to/project'
         zip_path = 'zip_path'
 
         mock_make_archive.return_value = zip_path

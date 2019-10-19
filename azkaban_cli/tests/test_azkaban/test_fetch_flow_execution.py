@@ -79,7 +79,6 @@ class AzkabanFetchFlowExecutionTest(TestCase):
         mock_fetch_flow_execution_request.assert_called_with(
             ANY, self.host, self.session_id, self.exec_id)
 
-
     @responses.activate
     def test_execution_cannot_be_found_fetch_flow_execution(self):
         """

@@ -37,42 +37,42 @@ class AzkabanFetchFlowExecutionTest(TestCase):
             responses.GET,
             self.host + "/executor",
             json={
-                "id" : "test",
-                "startTime" : 1407778382894,
-                "attempt" : 0,
-                "status" : "FAILED",
-                "updateTime" : 1407778404708,
-                "nodes" : [ {
-                    "attempt" : 0,
-                    "startTime" : 1407778404683,
-                    "id" : "test",
-                    "updateTime" : 1407778404683,
-                    "status" : "CANCELLED",
-                    "endTime" : 1407778404683
+                "id": "test",
+                "startTime": 1407778382894,
+                "attempt": 0,
+                "status": "FAILED",
+                "updateTime": 1407778404708,
+                "nodes": [{
+                    "attempt": 0,
+                    "startTime": 1407778404683,
+                    "id": "test",
+                    "updateTime": 1407778404683,
+                    "status": "CANCELLED",
+                    "endTime": 1407778404683
                 }, {
-                    "attempt" : 0,
-                    "startTime" : 1407778382913,
-                    "id" : "test-job-1",
-                    "updateTime" : 1407778393850,
-                    "status" : "SUCCEEDED",
-                    "endTime" : 1407778393845
+                    "attempt": 0,
+                    "startTime": 1407778382913,
+                    "id": "test-job-1",
+                    "updateTime": 1407778393850,
+                    "status": "SUCCEEDED",
+                    "endTime": 1407778393845
                 }, {
-                    "attempt" : 0,
-                    "startTime" : 1407778393849,
-                    "id" : "test-job-2",
-                    "updateTime" : 1407778404679,
-                    "status" : "FAILED",
-                    "endTime" : 1407778404675
-                  }, {
-                    "attempt" : 0,
-                    "startTime" : 1407778404675,
-                    "id" : "test-job-3",
-                    "updateTime" : 1407778404675,
-                    "status" : "CANCELLED",
-                    "endTime" : 1407778404675
-                } ],
-              "flow" : "test",
-              "endTime" : 1407778404705
+                    "attempt": 0,
+                    "startTime": 1407778393849,
+                    "id": "test-job-2",
+                    "updateTime": 1407778404679,
+                    "status": "FAILED",
+                    "endTime": 1407778404675
+                }, {
+                    "attempt": 0,
+                    "startTime": 1407778404675,
+                    "id": "test-job-3",
+                    "updateTime": 1407778404675,
+                    "status": "CANCELLED",
+                    "endTime": 1407778404675
+                }],
+                "flow": "test",
+                "endTime": 1407778404705
             },
             status=200
         )
